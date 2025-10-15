@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/mohdaneesh018/AWDIZ-BACKEND#readme",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "nodemon": "^3.1.10"
   }
