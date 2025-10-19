@@ -5,7 +5,15 @@ const app = express();
 dotenv.config();
 app.use(express.json());
 
-const users = [];
+// const users = [];
+let users = [
+    {
+        name: "Aneesh",
+        id: 1,
+        email: "aneesh123@gmail.com",
+        password: "1234",
+    },
+];
 
 app.get("/", (req, res) => {
     console.log(process.env.JMT_SECRET, "-process.env.JMT_SECRET");
@@ -19,26 +27,37 @@ app.get("/name", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-        if (!name || !email || !password) {
-            res.send("All fields are required");
-            return;
-        }
 
-        const existingUser = users.find((u) => u.email === email);
-        if (existingUser) {
-            res.send("User already exists");
-            return;
-        }
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+        res.send("All fields are required");
+        return;
+    }
 
-        users.push({ name, email, password });
-        res.send("Registered Successfully");
+    const existingUser = users.find((u) => u.email === email);
+    if (existingUser) {
+        res.send("User already exists");
+        return;
     }
-    catch (error) {
-        console.log(error);
-    }
-})
+
+    const newUser = {
+        id: users.length + 1,
+        name,
+        email,
+        password,
+    };
+
+    users.push(newUser);
+    res.send("Registered successfully");
+});
+
+// users.push({ name, email, password });
+// res.send("Registered Successfully");
+//     }
+//     catch (error) {
+//     console.log(error);
+// }
+// })
 
 app.post("/login", (req, res) => {
     try {
@@ -59,6 +78,48 @@ app.post("/login", (req, res) => {
         console.log(error);
     }
 })
+
+app.get("/getuser/:id", (req, res) => {
+    const { id } = req.params;
+    const user = users.find((u) => u.id == id);
+
+    if (!user) {
+        return res.send("User not found");
+    }
+    res.send(user);
+});
+
+app.delete("/deleteuser/:id", (req, res) => {
+    const { id } = req.params;
+    const user = users.find((u) => u.id == id);
+
+    if (!user) {
+        return res.send("User not found");
+    }
+    users = users.filter((u) => u.id != id);
+    res.send("User deleted successfully");
+});
+
+app.put("/edituser/:id", (req, res) => {
+    const { id } = req.params;
+    const { email, password } = req.body;
+
+    const user = users.find((u) => u.id == id);
+
+    if (!user) {
+        return res.send("User not found");
+    }
+
+    if (email) {
+        user.email = email;
+    }
+    if (password) {
+        user.password = password;
+    }
+
+    res.status(200).json({ message: "User updated successfully", users, });
+});
+
 
 app.listen(8000, () => {
     console.log("Server is running on http://localhost:8000");
