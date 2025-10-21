@@ -24,58 +24,51 @@ app.get("/", (req, res) => {
     // res.send("Welcome to the Express Server");
 });
 
+
 app.get("/name", (req, res) => {
     res.send("I am Mohd Aneesh");
 });
 
+
 app.post("/register", (req, res) => {
+  const { name, email, password } = req.body;
 
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-        res.send("All fields are required");
-        return;
-    }
+  if (!name || !email || !password) {
+    return res.send("All fields are required");
+  }
 
-    const existingUser = users.find((u) => u.email === email);
-    if (existingUser) {
-        res.send("User already exists");
-        return;
-    }
+  const existingUser = users.find((u) => u.email === email);
+  if (existingUser) {
+    return res.send("User already exists");
+  }
 
-    const newUser = {
-        id: users.length + 1,
-        name,
-        email,
-        password,
-    };
+  const newUser = {
+    id: users.length + 1,
+    name,
+    email,
+    password,
+  };
 
-    users.push(newUser);
-    res.send("Registered successfully");
-
-
-    users.push({ name, email, password });
-    res.send("Registered Successfully");
+  users.push(newUser);
+  res.send("Registered successfully");
 });
 
-app.post("/login", (req, res) => {
-    try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            res.send("Email and Password are required");
-            return;
-        }
 
-        const existingUser = users.find((u) => u.email === email);
-        if (!existingUser || existingUser.password !== password) {
-            res.send("Invalid");
-            return;
-        }
-        res.send("Login Successfully");
-    }
-    catch (error) {
-        console.log(error);
-    }
-})
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.send("Email and password are required");
+  }
+
+  const user = users.find((u) => u.email === email && u.password === password);
+  if (!user) {
+    return res.send("Invalid credentials");
+  }
+
+  res.send("Login successful");
+});
+
 
 app.get("/getuser/:id", (req, res) => {
     const { id } = req.params;
@@ -87,6 +80,7 @@ app.get("/getuser/:id", (req, res) => {
     res.send(user);
 });
 
+
 app.delete("/deleteuser/:id", (req, res) => {
     const { id } = req.params;
     const user = users.find((u) => u.id == id);
@@ -97,6 +91,7 @@ app.delete("/deleteuser/:id", (req, res) => {
     users = users.filter((u) => u.id != id);
     res.send("User deleted successfully");
 });
+
 
 app.put("/edituser/:id", (req, res) => {
     const { id } = req.params;
@@ -117,6 +112,7 @@ app.put("/edituser/:id", (req, res) => {
 
     res.status(200).json({ message: "User updated successfully", users, });
 });
+
 
 app.use("/api/v1", mainRouter);
 
