@@ -1,5 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
+import mainRouter from "./routes/index.js";
+
 
 const app = express();
 dotenv.config();
@@ -49,15 +51,11 @@ app.post("/register", (req, res) => {
 
     users.push(newUser);
     res.send("Registered successfully");
-});
 
-// users.push({ name, email, password });
-// res.send("Registered Successfully");
-//     }
-//     catch (error) {
-//     console.log(error);
-// }
-// })
+
+    users.push({ name, email, password });
+    res.send("Registered Successfully");
+});
 
 app.post("/login", (req, res) => {
     try {
@@ -120,6 +118,7 @@ app.put("/edituser/:id", (req, res) => {
     res.status(200).json({ message: "User updated successfully", users, });
 });
 
+app.use("/api/v1", mainRouter);
 
 app.listen(8000, () => {
     console.log("Server is running on http://localhost:8000");
