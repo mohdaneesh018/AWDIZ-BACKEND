@@ -5,6 +5,9 @@ import express from "express";
 import mongoose from "mongoose";
 import { verifyToken } from "./middleware/verifytoken.middleware.js";
 import mainRouter from "./routes/index.js";
+import blogRoute from "./routes/blog.route.js"
+import Product from "./model/product.model.js";
+
 
 dotenv.config();
 
@@ -17,6 +20,8 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
+app.use("/blog", blogRoute);
+
 
 let users = [
   {
@@ -116,6 +121,63 @@ app.put("/edituser/:id", (req, res) => {
 });
 
 app.use("/api/v1", verifyToken, mainRouter);
+
+app.get("/test", async (req, res) => {
+  try {
+
+    // Comparison Qperators
+
+    // const product = await Product.find({ category: { $eq: "shoes" } });
+
+    // const product = await Product.find({ brand: { $ne: "Puma" } });
+
+    // const product = await Product.find({ price: { $gt: 1600 } }); 
+
+    // const product = await Product.find({ price: { $gte: 1400 } }); 
+
+    // const product = await Product.find({ price: { $lt: 1000 } });
+
+    // const product = await Product.find({ price: { $lte: 900 } });
+
+    // const product = await Product.find({ category: { $in: ["t-shirts", "jeans"] } });
+
+    // const product = await Product.find({ category: { $nin: ["t-shirts", "jeans"] } });
+
+    // Logical Operators 
+    // const product = await Product.find({
+    //   $and: [
+    //     { category: "shoes" },
+    //     { brand: "Puma" }
+    //   ]
+    // });
+
+    //  const product = await Product.find({
+    //   $or: [
+    //     { brand: "adidas" },
+    //     { price: { $gt: 700 } }
+    //   ]
+    // });
+
+    // const product = await Product.find({
+    //   $nor: [{ brand: "Fozy" }, { category: "jeans" }],
+    // });
+
+    // const product = await Product.find({ price: { $not: { $gt: 1000 } } });
+
+    // const product = await Product.find({
+    //   stock: { $exists: true },
+    // });
+
+    const product = await Product.find({
+      title: { $type: "string" },
+    }); 
+
+    res.json({ success: true, product });
+  } catch (error) {
+    res.status(500).json({ success: false, error });
+  }
+});
+
 
 mongoose
   .connect(process.env.MONGODB_URL)
