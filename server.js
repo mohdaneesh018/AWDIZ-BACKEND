@@ -125,58 +125,89 @@ app.use("/api/v1", verifyToken, mainRouter);
 app.get("/test", async (req, res) => {
   try {
 
-    // Comparison Qperators
+Comparison Qperators
 
-    // const product = await Product.find({ category: { $eq: "shoes" } });
+    const product = await Product.find({ category: { $eq: "shoes" } });
 
-    // const product = await Product.find({ brand: { $ne: "Puma" } });
+    const product = await Product.find({ brand: { $ne: "Puma" } });
 
-    // const product = await Product.find({ price: { $gt: 1600 } }); 
+    const product = await Product.find({ price: { $gt: 1600 } });
 
-    // const product = await Product.find({ price: { $gte: 1400 } }); 
+    const product = await Product.find({ price: { $gte: 1400 } });
 
-    // const product = await Product.find({ price: { $lt: 1000 } });
+    const product = await Product.find({ price: { $lt: 1000 } });
 
-    // const product = await Product.find({ price: { $lte: 900 } });
+    const product = await Product.find({ price: { $lte: 900 } });
 
-    // const product = await Product.find({ category: { $in: ["t-shirts", "jeans"] } });
+    const product = await Product.find({ category: { $in: ["t-shirts", "jeans"] } });
 
-    // const product = await Product.find({ category: { $nin: ["t-shirts", "jeans"] } });
+    const product = await Product.find({ category: { $nin: ["t-shirts", "jeans"] } });
 
-    // Logical Operators 
-    // const product = await Product.find({
-    //   $and: [
-    //     { category: "shoes" },
-    //     { brand: "Puma" }
-    //   ]
-    // });
+Logical Operators
+    const product = await Product.find({
+      $and: [
+        { category: "shoes" },
+        { brand: "Puma" }
+      ]
+    });
 
-    //  const product = await Product.find({
-    //   $or: [
-    //     { brand: "adidas" },
-    //     { price: { $gt: 700 } }
-    //   ]
-    // });
+    const product = await Product.find({
+      $or: [
+        { brand: "adidas" },
+        { price: { $gt: 700 } }
+      ]
+    });
 
-    // const product = await Product.find({
-    //   $nor: [{ brand: "Fozy" }, { category: "jeans" }],
-    // });
+    const product = await Product.find({
+      $nor: [{ brand: "Fozy" }, { category: "jeans" }],
+    });
 
-    // const product = await Product.find({ price: { $not: { $gt: 1000 } } });
+    const product = await Product.find({ price: { $not: { $gt: 1000 } } });
 
-    // const product = await Product.find({
-    //   stock: { $exists: true },
-    // });
+    const product = await Product.find({
+      stock: { $exists: true },
+    });
 
     const product = await Product.find({
       title: { $type: "string" },
-    }); 
+    });
 
     res.json({ success: true, product });
   } catch (error) {
     res.status(500).json({ success: false, error });
   }
 });
+
+app.get("/test/Pipeline", async (req, res) => {
+  try {
+    const product = await Product.aggregate([
+      { $match: { brand: { $eq: "Puma" } } },
+
+      { $match: { brand: { $ne: "puma" } } },
+
+      { $match: { brand: { $in: ["Puma", "jeans"] } } },
+
+      { $match: { brand: { $nin: ["Puma", "jeans"] } } },
+
+      {
+        $group: {
+          _id: "$category",
+          totalQuantity: { $sum: "$stock" },
+          totalPrice: { $sum: { $multiply: ["$stock", "$price"] } }
+
+          _id: "$brand",
+          totalQuantity: { $sum: "$stock" },
+          totalPrice: { $sum: { $multiply: ["$stock", "$price"] } }
+        },
+      },
+    ]);
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+})
+
+
 
 
 mongoose
