@@ -26,8 +26,8 @@ app.use("/blog", blogRoute);
 let users = [
   {
     id: 1,
-    name: "Ramchandra",
-    email: "rdalvi1210@gmail.com",
+    name: "Aneesh",
+    email: "aneesh1234@gmail.com",
     password: "1234",
   },
 ];
@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/name", (req, res) => {
-  res.send("Hello, I'm Ramchandra Dalvi");
+  res.send("Hello, I am Mohd Aneesh");
 });
 
 app.post("/register", (req, res) => {
