@@ -12,7 +12,7 @@ const generateToken = (payload) => {
 export const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-
+console.log(name)
     if (!name || !email || !password || !role) {
       return res
         .status(400)

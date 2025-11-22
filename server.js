@@ -8,6 +8,7 @@ import mainRouter from "./routes/index.js";
 import blogRoute from "./routes/blog.route.js"
 import Product from "./model/product.model.js";
 import Order from "./model/order.model.js";
+import SampleData from "./model/sampletest.model.js";
 
 
 dotenv.config();
@@ -123,109 +124,216 @@ app.put("/edituser/:id", (req, res) => {
 
 app.use("/api/v1", verifyToken, mainRouter);
 
-app.get("/test", async (req, res) => {
+// app.get("/test", async (req, res) => {
+//   try {
+
+// Comparison Qperators
+
+//     const product = await Product.find({ category: { $eq: "shoes" } });
+
+//     const product = await Product.find({ brand: { $ne: "Puma" } });
+
+//     const product = await Product.find({ price: { $gt: 1600 } });
+
+//     const product = await Product.find({ price: { $gte: 1400 } });
+
+//     const product = await Product.find({ price: { $lt: 1000 } });
+
+//     const product = await Product.find({ price: { $lte: 900 } });
+
+//     const product = await Product.find({ category: { $in: ["t-shirts", "jeans"] } });
+
+//     const product = await Product.find({ category: { $nin: ["t-shirts", "jeans"] } });
+
+// Logical Operators
+//     const product = await Product.find({
+//       $and: [
+//         { category: "shoes" },
+//         { brand: "Puma" }
+//       ]
+//     });
+
+//     const product = await Product.find({
+//       $or: [
+//         { brand: "adidas" },
+//         { price: { $gt: 700 } }
+//       ]
+//     });
+
+//     const product = await Product.find({
+//       $nor: [{ brand: "Fozy" }, { category: "jeans" }],
+//     });
+
+//     const product = await Product.find({ price: { $not: { $gt: 1000 } } });
+
+//     const product = await Product.find({
+//       stock: { $exists: true },
+//     });
+
+//     const product = await Product.find({
+//       title: { $type: "string" },
+//     });
+
+//     res.json({ success: true, product });
+//   } catch (error) {
+//     res.status(500).json({ success: false, error });
+//   }
+// });
+
+// app.get("/test/Pipeline", async (req, res) => {
+//   try {
+//     const product = await Product.aggregate([
+//       { $match: { brand: { $eq: "Puma" } } },
+
+//       { $match: { brand: { $ne: "puma" } } },
+
+//       { $match: { brand: { $in: ["Puma", "jeans"] } } },
+
+//       { $match: { brand: { $nin: ["Puma", "jeans"] } } },
+
+//       {
+//         $group: {
+//           // _id: "$category",
+//           // totalQuantity: { $sum: "$stock" },
+//           // totalPrice: { $sum: { $multiply: ["$stock", "$price"] } }
+
+//           _id: "$brand",
+//           totalQuantity: { $sum: "$stock" },
+//           totalPrice: { $sum: { $multiply: ["$stock", "$price"] } }
+//         },
+//       },
+//     ]);
+//     res.status(201).json(product);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// })
+
+// app.get("/test/unwind-project", async (req, res) => {
+//   try {
+//     const product = await Order.aggregate([
+//       // { $unwind: "$products" },
+
+//       {
+//         $project: {
+//           user: 2,
+//           productId: "$products.product",
+//           quantity: "$products.quantity",
+//         },
+//       },
+//     ]);
+//     res.status(201).json(product);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
+
+
+app.get("/testingData", async (req, res) => {
   try {
+    const Orders = await SampleData.aggregate([
 
-Comparison Qperators
+      Qs. 1 Using $match
+      {
+        $match: {
+          $and: [
+            { status: { $eq: "Delivered" } },
+            { paymentMethod: { $eq: "UPI" } },
+          ],
+        },
+      }
 
-    const product = await Product.find({ category: { $eq: "shoes" } });
 
-    const product = await Product.find({ brand: { $ne: "Puma" } });
+      Qs. 2 Using $unwind
+      {
+        $unwind: "$items",
+      }
 
-    const product = await Product.find({ price: { $gt: 1600 } });
 
-    const product = await Product.find({ price: { $gte: 1400 } });
-
-    const product = await Product.find({ price: { $lt: 1000 } });
-
-    const product = await Product.find({ price: { $lte: 900 } });
-
-    const product = await Product.find({ category: { $in: ["t-shirts", "jeans"] } });
-
-    const product = await Product.find({ category: { $nin: ["t-shirts", "jeans"] } });
-
-Logical Operators
-    const product = await Product.find({
-      $and: [
-        { category: "shoes" },
-        { brand: "Puma" }
-      ]
-    });
-
-    const product = await Product.find({
-      $or: [
-        { brand: "adidas" },
-        { price: { $gt: 700 } }
-      ]
-    });
-
-    const product = await Product.find({
-      $nor: [{ brand: "Fozy" }, { category: "jeans" }],
-    });
-
-    const product = await Product.find({ price: { $not: { $gt: 1000 } } });
-
-    const product = await Product.find({
-      stock: { $exists: true },
-    });
-
-    const product = await Product.find({
-      title: { $type: "string" },
-    });
-
-    res.json({ success: true, product });
-  } catch (error) {
-    res.status(500).json({ success: false, error });
-  }
-});
-
-app.get("/test/Pipeline", async (req, res) => {
-  try {
-    const product = await Product.aggregate([
-      { $match: { brand: { $eq: "Puma" } } },
-
-      { $match: { brand: { $ne: "puma" } } },
-
-      { $match: { brand: { $in: ["Puma", "jeans"] } } },
-
-      { $match: { brand: { $nin: ["Puma", "jeans"] } } },
-
+      Qs. 3 Using $group
+      {
+        $unwind: "$items"
+      },
       {
         $group: {
-          // _id: "$category",
-          // totalQuantity: { $sum: "$stock" },
-          // totalPrice: { $sum: { $multiply: ["$stock", "$price"] } }
+          _id: "$customerId",
+          totalOrders: { $sum: 1 },
+          totalAmount: { $sum: { $multiply: ["$items.price", "$items.qty"] } }
+        }
+      }
 
-          _id: "$brand",
-          totalQuantity: { $sum: "$stock" },
-          totalPrice: { $sum: { $multiply: ["$stock", "$price"] } }
-        },
-      },
-    ]);
-    res.status(201).json(product);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-})
 
-app.get("/test/unwind-project", async (req, res) => {
-  try {
-    const product = await Order.aggregate([
-      { $unwind: "$products" },
-
+      Qs. 4 Using $project
       {
         $project: {
-          user: 2,
-          productId: "$products.product",
-          quantity: "$products.quantity",
-        },
+          _id: 0,
+          customerName: "$customerName",
+          orderDate: "$orderDate",
+          city: "$location.city",
+          totalItems: { $sum: "$items.qty" }
+        }
+      }
+
+
+      Qs. 5 Using $group + $sort
+      {
+        $unwind: "$items"
       },
+      {
+        $group: {
+          _id: "$customerId",
+          totalSpent: { $sum: { $multiply: ["$items.price", "$items.qty"] } },
+          customerName: { $first: "$customerName" }
+        }
+      },
+      {
+        $sort: { totalSpent: -1 }
+      },
+      {
+        $limit: 3
+      }
+
+
+      Qs. 6 Using $unwind + $group
+      {
+        $unwind: "$items"
+      },
+      {
+        $group: {
+          _id: "$items.product",
+          totalSold: { $sum: "$items.qty" }
+        }
+      },
+      {
+        $sort: { totalSold: -1 }
+      },
+      {
+        $limit: 1
+      }
+
+
+      Qs. 7 Using $match + $group
+      {
+        $match: { "location.city": "Mumbai" }
+      },
+      {
+        $unwind: "$items"
+      },
+      {
+        $group: {
+          _id: "$location.city",
+          totalRevenue: { $sum: { $multiply: ["$items.price", "$items.qty"] } }
+        }
+      }
+
     ]);
-    res.status(201).json(product);
+    res.status(200).json(Orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 
 mongoose
